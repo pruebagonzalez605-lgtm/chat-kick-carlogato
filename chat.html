@@ -211,13 +211,10 @@
       if (!res.ok) throw new Error("Canal no encontrado");
       
       const data = await res.json();
-      const chatroom_id = data?.data?.chatroom?.id;
+      console.log("Respuesta de API:", data);
       
-      if (!chatroom_id) throw new Error("No se encontró chatroom ID");
-      
-      console.log(`✅ Canal encontrado: ${channel}`);
-      console.log(`✅ Chatroom ID: ${chatroom_id}`);
-      return chatroom_id;
+      // El canal ya tiene el nombre, solo verificar que existe
+      return channel;
     } catch (err) {
       console.error("❌ Error buscando canal:", err);
       chatDiv.innerHTML = `❌ Error: No se encontró el canal "${channel}"`;
