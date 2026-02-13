@@ -213,9 +213,12 @@
       if (!res.ok) throw new Error("Canal no encontrado");
       
       const data = await res.json();
-      const chatroom_id = data?.data?.id;
+      console.log("Respuesta completa:", data);
       
-      if (!chatroom_id) throw new Error("No se encontró ID del chat");
+      // Intentar extraer el ID de diferentes ubicaciones posibles
+      const chatroom_id = data?.data?.id || data?.id || data?.[0]?.id;
+      
+      if (!chatroom_id) throw new Error("No se encontró ID del chat. Respuesta: " + JSON.stringify(data));
 
       console.log(`✅ Conectando al canal ${channel} (ID: ${chatroom_id})`);
 
