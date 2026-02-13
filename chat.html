@@ -210,15 +210,26 @@
 
       // Obtener el chatroom_id first
       const res = await fetch(`https://kick.com/api/v2/channels/${channel}/chatroom`);
-      if (!res.ok) throw new Error("Canal no encontrado");
+      
+      console.log("Status:", res.status);
+      console.log("OK:", res.ok);
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Canal no encontrado (${res.status}): ${errorText}`);
+      }
       
       const data = await res.json();
-      console.log("Respuesta completa:", data);
+      console.log("Respuesta completa:", JSON.stringify(data, null, 2));
       
       // Intentar extraer el ID de diferentes ubicaciones posibles
       const chatroom_id = data?.data?.id || data?.id || data?.[0]?.id;
       
-      if (!chatroom_id) throw new Error("No se encontró ID del chat. Respuesta: " + JSON.stringify(data));
+      if (!chatroom_id) {
+        console.error("Estructura de datos:", Object.keys(data));
+        throw new Error("No se encontró ID del chat. Respuesta: " + JSON.stringify(data));
+      }
 
       console.log(`✅ Conectando al canal ${channel} (ID: ${chatroom_id})`);
 
