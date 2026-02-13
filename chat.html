@@ -170,7 +170,7 @@
 
   <section id="chat-section">
     <div class="chat-header">💬 Chat en tiempo real</div>
-    <iframe id="chat" class="chat-iframe" src="" allow="autoplay; encrypted-media" referrerpolicy="no-referrer"></iframe>
+    <iframe id="chat" class="chat-iframe" src="" sandbox="allow-scripts allow-same-origin allow-popups" referrerpolicy="no-referrer"></iframe>
   </section>
 
 <script>
@@ -184,9 +184,44 @@
   // Cargar el chat de Kick en el iframe
   function cargarChat(channel) {
     const chatIframe = document.getElementById("chat");
-    const url = `https://kick.com/popout/${channel}/chat`;
-    console.log(`Cargando chat de ${channel}: ${url}`);
-    chatIframe.src = url;
+    
+    // Intentar cargar directamente primero
+    const urls = [
+      `https://kick.com/popout/${channel}/chat`,
+      // Si la URL anterior no funciona, tenemos alternativas
+    ];
+    
+    console.log(`Cargando chat de ${channel}...`);
+    chatIframe.src = urls[0];
+    
+    // Esperar y si no carga, mostrar mensaje
+    setTimeout(() => {
+      if (!chatIframe.contentDocument && !chatIframe.contentWindow) {
+        console.warn("El iframe puede estar bloqueado por X-Frame-Options");
+        mostrarAlternativa(channel);
+      }
+    }, 3000);
+  }
+
+  function mostrarAlternativa(channel) {
+    const chat = document.getElementById("chat-section");
+    chat.innerHTML = `
+      <div class="chat-header">💬 Chat en tiempo real</div>
+      <div style="padding: 2rem; text-align: center; color: #888;">
+        <p>⚠️ El iframe está bloqueado por Kick</p>
+        <p style="margin-top: 1rem; font-size: 14px;">
+          <a href="https://kick.com/popout/${channel}/chat" target="_blank" style="color: #00ff66; text-decoration: none;">
+            👉 Click aquí para abrir el chat en una ventana nueva
+          </a>
+        </p>
+        <p style="margin-top: 2rem; font-size: 12px; color: #666;">
+          O copia este link en OBS como Browser Source:<br>
+          <code style="display: block; margin-top: 0.5rem; padding: 0.5rem; background: #111; border-radius: 4px;">
+            https://kick.com/popout/${channel}/chat
+          </code>
+        </p>
+      </div>
+    `;
   }
 
   // Inicializar
